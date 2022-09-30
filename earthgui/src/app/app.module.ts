@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 
 import { ApiModule, Configuration } from './api';
 import { SandboxComponent } from './sandbox/sandbox.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatSliderModule } from '@angular/material/slider';
 
 const config = new Configuration();
 config.basePath = "http://localhost:5224" 
@@ -18,7 +21,9 @@ config.basePath = "http://localhost:5224"
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ApiModule.forRoot(() => config)
+    ApiModule.forRoot(() => config),
+    NoopAnimationsModule,
+    MatSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]
