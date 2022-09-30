@@ -1,0 +1,9 @@
+[Unit]
+Description=EarthquakeAPI
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/earthquakeapi
+
+[Install]
+WantedBy=multi-user.target

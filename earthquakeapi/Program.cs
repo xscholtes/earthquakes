@@ -5,9 +5,10 @@ using NetTopologySuite.IO;
 using NetTopologySuite.IO.Converters;
 using earthquakeapi;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseSystemd(); 
 // Add services to the container.
 
 builder.Services.AddControllers(options =>
