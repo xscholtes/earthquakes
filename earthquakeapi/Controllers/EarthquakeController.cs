@@ -48,18 +48,77 @@ namespace earthquakeapi.Controllers
             var result = new FeatureCollection();
             foreach (Earthquake eqk in eqIQ)
             {
-                result.Add(new Feature
-                {
-                    Geometry = eqk.Location,
-                    Attributes = new AttributesTable
-                    {
-                        { GeoJsonConverterFactory.DefaultIdPropertyName, eqk.EarthquakeId },
-                        { "source", eqk.Source},
-                    }
-                });
+                result.Add(eqk.ToFeature());
             }
 
             return result;
+        }
+
+        [HttpPost]
+        public Feature Post(IFeature eqFeature)
+
+
+        {
+
+            if (!(eqFeature.Geometry is Point point))
+            {
+                throw new ArgumentException("missing 'geometry' on a feature, or it isn't a Point");
+            }
+
+
+            if (eqFeature.Attributes is null)
+            {
+                throw new ArgumentException("missing 'properties' on a feature");
+            }
+
+            var sentId = eqFeature.GetOptionalId("id");
+            Earthquake? eqk = null;
+            if (sentId == null)
+            {
+                eqk = new Earthquake();
+            }
+            else
+            {
+                int eqId = Decimal.ToInt32((Decimal)eqFeature.GetOptionalId("id"));
+                eqk = _EarthquakeContext.Earthquakes?.SingleOrDefault(e => e.EarthquakeId == eqId);
+            }
+            eqk!.Location = (Point)eqFeature.Geometry;
+            if (!eqFeature.Attributes.TryGetJsonObjectPropertyValue("earthquake", _jsonOptions.Value.JsonSerializerOptions, out Earthquake eqkEdited))
+            {
+                throw new ArgumentException("'earthquake' property is not a Earthquake");
+            }
+
+
+            if (eqFeature != null && eqk != null)
+            {
+                eqk.FromParsed(eqkEdited);
+                if (_EarthquakeContext.Entry(eqk).State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+                {
+                    _EarthquakeContext.Attach(eqk);
+                }
+                _EarthquakeContext.SaveChanges();
+            }
+            return eqk!.ToFeature();
+        }
+
+        [HttpDelete]
+        public void Delete(IFeature eqFeature)
+        {
+            var sentId = eqFeature.GetOptionalId("id");
+            if (sentId == null)
+            {
+                throw new ArgumentException("'earthquake' not invalid id");
+            }
+            else
+            {
+                int eqId = Decimal.ToInt32((Decimal)eqFeature.GetOptionalId("id"));
+                Earthquake eqk = _EarthquakeContext.Earthquakes?.SingleOrDefault(e => e.EarthquakeId == eqId);
+                if (eqFeature != null && eqk != null)
+                {
+                    _EarthquakeContext.Earthquakes?.Remove(eqk);
+                    _EarthquakeContext.SaveChanges();
+                }
+            }
         }
     }
 

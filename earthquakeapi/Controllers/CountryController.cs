@@ -37,7 +37,7 @@ public class CountryController : ControllerBase
         _geometryServices = geometryServices;
     }
 
-    [HttpGet(Name = "GetCountrie")]
+    [HttpGet(Name = "GetCountries")]
     public FeatureCollection Get()
     {
         IEnumerable<Country> eqIQ = from eq in _EarthquakeContext.Countries
