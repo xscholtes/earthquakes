@@ -47,7 +47,7 @@ export class SandboxComponent implements OnInit {
 			     return proj([d.geometry.coordinates[0], d.geometry.coordinates[1]])![1];
 		   })
 		  .attr('r', function(d:any) {
-			    return d.properties.magnitude /2;
+			    return d.properties.earthquake.magnitude;
 		  })
 		  .style('fill', 'red')
 		  .style('opacity', 0.75);

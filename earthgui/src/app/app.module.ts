@@ -11,7 +11,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSliderModule } from '@angular/material/slider';
 
 const config = new Configuration();
-config.basePath = "http://localhost:5224" 
+config.basePath = "https://demo.xavierscholtes.space/api" 
 @NgModule({
   declarations: [
     AppComponent,
