@@ -21,8 +21,7 @@ public class EarthquakeContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseNpgsql("Host=64.225.64.166;Database=hearthquakes;Username=geographer",
-            o => o.UseNetTopologySuite());
+        builder.UseNpgsql("Host=127.0.0.1;Database=earthquake;Username=geographer;Password=doudou1406",o => o.UseNetTopologySuite());
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

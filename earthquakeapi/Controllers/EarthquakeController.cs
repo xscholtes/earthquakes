@@ -54,6 +54,15 @@ namespace earthquakeapi.Controllers
             return result;
         }
 
+        [HttpGet("sources",Name = "GetSources")]
+        public List<string> GetSources()
+        {
+            var result = DBHelper.RawSqlQuery<string>("SELECT DISTINCT source FROM public.earthquakes ORDER BY 1 ", x => (string)x[0]);
+
+
+            return result;
+        }
+
         [HttpPost]
         public Feature Post(IFeature eqFeature)
 
@@ -112,7 +121,7 @@ namespace earthquakeapi.Controllers
             else
             {
                 int eqId = Decimal.ToInt32((Decimal)eqFeature.GetOptionalId("id"));
-                Earthquake eqk = _EarthquakeContext.Earthquakes?.SingleOrDefault(e => e.EarthquakeId == eqId);
+                Earthquake? eqk = _EarthquakeContext.Earthquakes?.SingleOrDefault(e => e.EarthquakeId == eqId);
                 if (eqFeature != null && eqk != null)
                 {
                     _EarthquakeContext.Earthquakes?.Remove(eqk);

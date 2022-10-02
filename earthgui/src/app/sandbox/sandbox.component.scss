@@ -1,0 +1,14 @@
+:host {             // host targets selector: 'home'
+
+    display: block;
+    left: 0;
+    width: 100%;    // takes parent width        
+    height: 100%;   // takes parent height    
+}
+
+.svg_container {
+    margin: 40px;
+    border-width: 1px;
+    border-color: aquamarine;
+    border-style: solid;
+}

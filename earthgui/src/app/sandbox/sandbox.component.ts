@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { CountryService, EarthquakeService, IFeature } from '../api';
+
+import { EarthquakeLiveService } from "../earthquake.service";
+import { Subscription } from 'rxjs';
+import { Earthquake } from '../earthquake';
+import { least } from 'd3';
+
 @Component({
   selector: 'app-sandbox',
   templateUrl: './sandbox.component.html',
@@ -18,10 +24,17 @@ export class SandboxComponent implements OnInit {
   graticulePath:any;
   countryPath:any;
 
-  constructor(private countryService:CountryService, private earthQuakeService:EarthquakeService) { }
+  @Input() earthquake?:IFeature;
+  subscription: Subscription;
+
+  constructor(private countryService:CountryService, private earthQuakeService:EarthquakeService, private dataService: EarthquakeLiveService) { 
+    this.subscription = this.dataService.mapEarthquake.subscribe(eq => this.earthquake = eq)
+  }
 
   ngOnInit(): void {
+    
     this.initSvg()
+
   }
 
   initSvg() {
@@ -47,14 +60,15 @@ export class SandboxComponent implements OnInit {
 			     return proj([d.geometry.coordinates[0], d.geometry.coordinates[1]])![1];
 		   })
 		  .attr('r', function(d:any) {
-			    return d.properties.earthquake.magnitude;
+			    return d.properties.earthquake.magnitude /2;
 		  })
 		  .style('fill', 'red')
 		  .style('opacity', 0.75);
-      this.svg.selectAll('circle').on('click',function(e:any,d:any){
+      let me = this;
+      this.svg.selectAll('circle').on('click',function(e:any,d:IFeature){
         
         let pos = d3.pointer(e);
-        console.log(d);
+        me.dataService.mapNextEarthquake(d);
         let coord = proj.invert(pos);
         console.log(coord);
       });
