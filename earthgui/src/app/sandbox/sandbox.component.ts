@@ -99,8 +99,8 @@ export class SandboxComponent implements OnInit {
       this.lowresCountries = topojson.feature(data, data.objects.land);
       //this.borders = topojson.mesh(data, data.objects.countries, (a: any, b: any) => { return a !== b; });
     });
-    this.signalRService.startConnection();
-    this.signalRService.addTransferChartDataListener();  
+//    this.signalRService.startConnection();
+  //  this.signalRService.addTransferChartDataListener();  
 
   }
 

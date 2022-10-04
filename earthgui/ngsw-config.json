@@ -28,7 +28,7 @@
     },
     {
       "name": "countries",
-      "installMode": "lazy",
+      "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
         "urls": [

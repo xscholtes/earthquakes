@@ -10,7 +10,7 @@ export class SignalrService {
   private hubConnection: signalR.HubConnection | undefined
     public startConnection = () => {
       this.hubConnection = new signalR.HubConnectionBuilder()
-                              .withUrl('./api')
+                              .withUrl('./api/chat')
                               .build();
       this.hubConnection
         .start()

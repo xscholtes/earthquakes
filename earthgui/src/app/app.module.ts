@@ -33,8 +33,8 @@ import {AutoCompleteModule} from 'primeng/autocomplete';
 import { ChartViewComponent } from './chart-view/chart-view.component';
 
 const config = new Configuration();
-//config.basePath = "https://demo.xavierscholtes.space/api";
-config.basePath = "http://localhost:5224";
+config.basePath = "https://demo.xavierscholtes.space/api";
+//config.basePath = "http://localhost:5224";
 @NgModule({
   declarations: [
     AppComponent,
