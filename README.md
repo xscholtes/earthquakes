@@ -18,6 +18,20 @@
 - Postgis database
 - donetcore sdk 6
 - npm, angular cli
+- swagger-code-gen
+
+## Installation
+
+1. got clone ...
+2. cd earthquakeapi
+3. psql < db/earthquake.sql
+4. change DB connection in Model.cs 
+5. dotnet build
+6. create a systemd file (sample here [earthquaheapi/EarthquakeAPI.service], change the program location)
+7. systemctl start EarthquakeAPI.service
+8. cd earthgui
+9. dotnet build --output-path /var/www/html
+
 
 ## Patterns 
 	- Database First Model design (Entity Framework)
@@ -47,7 +61,9 @@
 	- Rendering improvement by not calculating invisible items
 	- Lazy rendering
 	
-## Improvements 
+## Future improvements
+	- database geo query
+	- drag/drop the map, mouse wheel
 	- cache/invalidation on API
 	- cache/invalidation on Web Server
 	- cache headers for client
