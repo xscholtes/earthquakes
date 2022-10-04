@@ -1,1 +1,1 @@
-Datas for countries and earthquakes
+Data for countries and earthquakes
