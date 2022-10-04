@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { Earthquake } from '../earthquake';
-import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { Subscription } from 'rxjs';
 import { EarthquakeLiveService } from '../earthquake.service';
 import { ThisReceiver } from '@angular/compiler';
+import { Coordinate, EarthquakeService } from '../api';
 
 @Component({
   selector: 'app-earthquake-detail',
@@ -11,69 +12,116 @@ import { ThisReceiver } from '@angular/compiler';
   styleUrls: ['./earthquake-detail.component.scss']
 })
 export class EarthquakeDetailComponent implements OnInit {
+  sources?: string[];
+  status?: string[];
+  private _editMode: boolean = false;
+  @Output()
+  public get editMode(): boolean {
+    this._editMode = this.earthquake.hasOwnProperty("id") == true;
+    return this._editMode;
+  }
+  public set editMode(value: boolean) {
+    if (value == false) {
+      this.earthquake = {} as Earthquake;
+    }
+    this._editMode = value;
+  }
 
-
-
-  earthquakeForm = new FormGroup({
-    source: new FormControl(),
-    date: new FormControl<Date | null>(null),
-    time: new FormControl(),
-    latitude: new FormControl(),
-    longitude: new FormControl(),
-    depth: new FormControl(),
-    magnitude: new FormControl(),
-    magnitude_type: new FormControl(),
-    status: new FormControl(),
+  earthquakeForm =this.fb.group({
+    id: [0],
+    source: ['', Validators.required],
+    date: ['', Validators.required],
+    time: ['', Validators.required],
+    latitude: [0, Validators.required],
+    longitude: [0, Validators.required],
+    depth: [0, Validators.required],
+    magnitude: [0, Validators.required],
+    magnitude_type: [''],
+    status: ['', Validators.required],
   });
 
-  @Input() earthquake?: Earthquake;
+  editedFeature:any = null;
+
+  private _earthquake: Earthquake;
+  @Input()
+  public get earthquake(): Earthquake {
+    return this._earthquake;
+  }
+  public set earthquake(value: Earthquake) {
+    value.date = new Date(value.date);
+    this._earthquake = value;
+    this.earthquakeForm.controls['id'].disable();
+  }
+
   subscription: Subscription;
 
-  @Input()
-  id: number = 1;
-  @Input()
-  source: string = 'TEST';
-  @Input()
-  date: Date = new Date();
-  @Input()
-  time: string = '';
-  @Input()
-  latitude: number = 0;
-  @Input()
-  longitude: number = 0;
-  @Input()
-  depth: number = 0;
-  @Input()
-  magnitude: number = 0;
-  @Input()
-  magnitude_type: string = '';
-  @Input()
-  status: string = '';
-
-  constructor(private dataService: EarthquakeLiveService) {
-    this.subscription = this.dataService.editorEarthquake.subscribe(eq => { this.earthquake = eq; this.editEarthQuake()})
+  constructor(private earthQuakeService: EarthquakeService, private dataService: EarthquakeLiveService,private fb: FormBuilder) {
+    this._earthquake = {} as Earthquake;
+    this.subscription = this.dataService.editorEarthquake.subscribe((feature:any) => {
+      this.editedFeature = feature;
+      this.earthquake = this.dataService.fromFeatureToEarthquake(feature);
+      this.editEarthQuake()
+    })
   }
 
   ngOnInit(): void {
+    this.earthQuakeService.getSources().subscribe(s => this.sources = s);
+    this.earthQuakeService.getStatus().subscribe(s => this.status = s);
+   
   }
 
+  emptyFeature() :any{
+    let newFeature = {
+      type: "Feature",
+      id: null,
+      geometry: {
+        type: "Point",
+        coordinates: [0, 0] as Coordinate[]
+      },
+      properties: {
+        earthquake: {
+          source: "",
+          date: "",
+          time: "01:01:01",
+          latitude: 0,
+          longitude: 0,
+          depth: 0,
+          magnitude: 0,
+          magnitude_type: "MWW",
+          status: "Reviewed",
+          id: 0
+        }
+      }
+    };
+    return newFeature;
+  }
+  newFeature():void{
+    this.dataService.mapNextEarthquake(this.emptyFeature());
+  }
   editEarthQuake(): void {
-    if(this.earthquake != null){
-      this.id = this.earthquake.id;
-      this.source = this.earthquake.source;
-      this.date = this.earthquake.date;
-      this.time = this.earthquake.time;
-      this.latitude = this.earthquake.latitude;
-      this.longitude = this.earthquake.longitude;
-      this.depth = this.earthquake.depth;
-      this.magnitude = this.earthquake.magnitude;
-      this.magnitude_type = this.earthquake.magnitude_type;
-      this.status = this.earthquake.status;
-    }
+    this.earthquakeForm.setValue(this.earthquake as any);
   }
 
   cancel() {
-      this.earthquakeForm.reset(this.earthquake);
+    this.earthquakeForm.reset(this.earthquake as any);
+  }
+  onSubmit() {
+    if(this.editedFeature.id == null) {
+      this.editedFeature  = this.emptyFeature();
+      delete this.editedFeature["id"];
+    } 
+    this.editedFeature .properties.earthquake = this.earthquakeForm.value;
+    this.earthQuakeService.earthquakePost(this.editedFeature).subscribe(feature => {
+      this.editedFeature = feature; 
+      this.earthquake = this.dataService.fromFeatureToEarthquake(feature);
+      this.dataService.editorUpdateEarthquake(feature)
+    });
+  }
+  delete() {
+    this.editMode = false;
+    this.earthQuakeService.earthquakeDelete(this.editedFeature).subscribe(feature => {
+      this.dataService.mapDeletedEarthquake(this.editedFeature.id);
+    });
   }
 }
 

@@ -3,6 +3,7 @@ export * from './coordinateSequence';
 export * from './coordinateSequenceFactory';
 export * from './dimension';
 export * from './envelope';
+export * from './feature';
 export * from './geometry';
 export * from './geometryFactory';
 export * from './iAttributesTable';

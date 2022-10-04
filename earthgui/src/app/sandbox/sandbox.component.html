@@ -1,8 +1,83 @@
-<div class="svg_container">
-<svg id="svg_main" viewBox="0 0 928 552" style="display: block;padding:20;">
-    <path [attr.d]="outlinePath" fill="#fff"></path>
-    <path [attr.d]="graticulePath" stroke="#ccc" fill="none"></path>
-    <path [attr.d]="countryPath" fill="#ccc" stroke="#fff"></path>
-    <path [attr.d]="outlinePath" fill="none" stroke="#000"></path>
-</svg>
+<div class="toolbar-container">
+    <table class="toolbar-table" [cellPadding]="5">
+        <tr>
+            <td [width]="60" *ngIf="satelliteView == false"><span>&#923;:{{slideLambda}}&deg;</span></td>
+            <td [width]="60" *ngIf="satelliteView == true"><span>Long:{{slideLambda}}&deg;</span></td>
+            <td [width]="200">
+                <p-slider [(ngModel)]="slideLambda" [max]="180" [min]="-180" [step]="0.1"
+                    (onChange)="changeSlider($event)" (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td [width]="100" *ngIf="satelliteView == false"><span>Zoom:{{orthoScale}}&nbsp;X</span></td>
+            <td [width]="200" *ngIf="satelliteView == false">
+                <p-slider [(ngModel)]="orthoScale" [max]="25" [min]="1" [step]="0.01" (onChange)="changeSlider($event)"
+                    (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td [width]="100" *ngIf="satelliteView == true"><span>Altitude:{{altitude}}&nbsp;km</span></td>
+            <td [width]="200" *ngIf="satelliteView == true">
+                <p-slider [(ngModel)]="altitude" [max]="40000" [min]="8" [step]="10" (onChange)="changeSlider($event)"
+                    (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td><button mat-raised-button color="primary" (click)="reset()">Reset map position</button></td>
+            <td [width]="60">
+                <span>Goto country:</span>
+            </td>
+            <td [width]="300">
+                <p-autoComplete [(ngModel)]="selectedCountry" (onSelect)="countrySelect($event)" [showClear]="true" [suggestions]="filteredOptions" (completeMethod)="search($event)" field="name"></p-autoComplete>
+            </td>
+            <td [width]="60">&nbsp;</td>
+        </tr>
+        <tr>
+            <td [width]="60" *ngIf="satelliteView == false"> <span>&#934;:{{slidePhi}}&deg;</span></td>
+            <td [width]="60" *ngIf="satelliteView == true"><span>Lat:{{slidePhi}}&deg;</span></td>
+            <td [width]="200">
+                <p-slider [(ngModel)]="slidePhi" [max]="90" [min]="-90" [step]="0.1" (onChange)="changeSlider($event)"
+                    (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td [width]="100" *ngIf="satelliteView == false">&nbsp;</td>
+            <td [width]="200" *ngIf="satelliteView == false">&nbsp;</td>
+            <td [width]="100" *ngIf="satelliteView == true"><span>Camera tilt:{{cameraTilt}}&nbsp;&deg;</span></td>
+            <td [width]="200" *ngIf="satelliteView == true">
+                <p-slider [(ngModel)]="cameraTilt" [max]="90" [min]="0" [step]="0.5" (onChange)="changeSlider($event)"
+                    (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td>
+                <p-toggleButton [(ngModel)]="satelliteView" (onChange)="handleChangeGeo($event)" onLabel="Satellite"
+                    offLabel="Orthographic" [style]="{'width': '10em'}"></p-toggleButton>
+            </td>
+            <td [width]="60">
+                <span>Magnitude range:</span></td>
+            <td [width]="300" ><p-slider [(ngModel)]="magnitudeRange"  [max]="10" [min]="0"  [step]="0.1"  [range]="true" (onChange)="changeSlider($event)"> </p-slider></td>
+            <td [width]="60"> &nbsp;</td>
+        </tr>
+        <tr>
+            <td [width]="60" *ngIf="satelliteView == false"><span>&#947;:{{slideGamma}}&deg;</span></td>
+            <td [width]="60" *ngIf="satelliteView == true"><span>Rot.:{{slideGamma}}&deg;</span></td>
+            <td [width]="200">
+                <p-slider [(ngModel)]="slideGamma" [max]="180" [min]="-180" [step]="0.1"
+                    (onChange)="changeSlider($event)" (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td [width]="100" *ngIf="satelliteView == false">&nbsp;</td>
+            <td [width]="200" *ngIf="satelliteView == false">&nbsp;</td>
+            <td [width]="100" *ngIf="satelliteView == true"><span>Camera opening:{{cameraOpening}}&nbsp;&deg;</span>
+            </td>
+            <td [width]="200" *ngIf="satelliteView == true">
+                <p-slider [(ngModel)]="cameraOpening" [max]="175" [min]="1" [step]="0.01"
+                    (onChange)="changeSlider($event)" (onSlideEnd)="changeSliderEnd($event)"> </p-slider>
+            </td>
+            <td><button mat-raised-button color="primary" (click)="download()">Download SVG image</button></td>
+            <td><button mat-raised-button color="primary" (click)="showStats()">Show stats</button></td>
+            <td>&nbsp;</td>
+            <td><p-toggleButton onIcon="pi pi-cloud-download" offIcon="pi pi-cloud" (onChange)="handleChangeIss($event)"></p-toggleButton></td>
+        </tr>
+    </table>
+
+</div>
+<div class="svg-container" >
+    <svg id="svg_main" viewBox="0 0 928 552" style="display: block;padding:20;">
+        <path [attr.d]="outlinePath" stroke-width="0.25" fill="#c2dde6" stroke="#ccc"></path>
+        <path [attr.d]="graticulePath" stroke="#ccc" fill="none"></path>
+        <path [(attr.d)]="countryPath" stroke-width="0.5" fill="#2d545e" stroke="#fff"></path>
+        <path [(attr.d)]="borderPath" stroke-width="0.5" fill="none" stroke="#fff"></path>
+        <path [attr.d]="outlinePath" stroke-width="0.25" fill="none" stroke="#ccc"></path>
+    </svg>
 </div>

@@ -31,4 +31,18 @@ public static class DBHelper
         }
     }
 
+    public static void UpdateGeometry(int id)
+    {
+        using (var context = new EarthquakeContext())
+        {
+            using (var command = context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = @$"UPDATE public.earthquakes SET wkb_geometry = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) WHERE ogc_fid = {id}";
+                command.CommandType = CommandType.Text;
+                context.Database.OpenConnection();
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
 }

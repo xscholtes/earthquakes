@@ -26,15 +26,22 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 
+
+import {SliderModule} from 'primeng/slider';
+import {ToggleButtonModule} from 'primeng/togglebutton';
+import {AutoCompleteModule} from 'primeng/autocomplete';
+import { ChartViewComponent } from './chart-view/chart-view.component';
+
 const config = new Configuration();
 //config.basePath = "https://demo.xavierscholtes.space/api";
-config.basePath = "https://localhost:7266";
+config.basePath = "http://localhost:5224";
 @NgModule({
   declarations: [
     AppComponent,
     SandboxComponent,
     EarthquakeDetailComponent,
     TestNavComponent,
+    ChartViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +54,7 @@ config.basePath = "https://localhost:7266";
     NoopAnimationsModule,
     MaterialEarthModule,
     MatNativeDateModule,
+    
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -61,7 +69,10 @@ config.basePath = "https://localhost:7266";
     MatListModule,
     MatGridListModule,
     MatCardModule,
-    MatMenuModule
+    MatMenuModule,
+    SliderModule,
+    ToggleButtonModule,
+    AutoCompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

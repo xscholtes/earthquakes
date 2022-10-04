@@ -6,9 +6,23 @@
     height: 100%;   // takes parent height    
 }
 
-.svg_container {
-    margin: 40px;
-    border-width: 1px;
-    border-color: aquamarine;
-    border-style: solid;
+.svg-container {
+    border-color: rgb(0, 0, 0);
+    background-color: white;
+    height:960px;
+}
+
+.toolbar-container {
+    padding-top: 22px;
+    display: block;
+}
+
+.toolbar-table{
+    width:100%;
+    min-width: 60px;
+   
+}
+
+.toolbar-table > td {
+    display: block;
 }

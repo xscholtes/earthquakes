@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -23,10 +24,11 @@ namespace earthquakeapi.Controllers
         private readonly EarthquakeContext _EarthquakeContext;
         private readonly IOptions<JsonOptions> _jsonOptions;
         private readonly NtsGeometryServices _geometryServices;
+        private readonly IHubContext<EarthquakeHub> _hub;
 
-
-        public EarthquakeController(ILogger<EarthquakeController> logger, EarthquakeContext eq, IOptions<JsonOptions> jsonOptions, NtsGeometryServices geometryServices)
+        public EarthquakeController(IHubContext<EarthquakeHub> hub, ILogger<EarthquakeController> logger, EarthquakeContext eq, IOptions<JsonOptions> jsonOptions, NtsGeometryServices geometryServices)
         {
+            _hub = hub;
             _logger = logger;
             _EarthquakeContext = eq;
             // if you need to use TryGetJsonObjectPropertyValue, then you will
@@ -54,12 +56,17 @@ namespace earthquakeapi.Controllers
             return result;
         }
 
-        [HttpGet("sources",Name = "GetSources")]
+        [HttpGet("sources", Name = "GetSources")]
         public List<string> GetSources()
         {
             var result = DBHelper.RawSqlQuery<string>("SELECT DISTINCT source FROM public.earthquakes ORDER BY 1 ", x => (string)x[0]);
+            return result;
+        }
 
-
+        [HttpGet("status", Name = "GetStatus")]
+        public List<string> GetStatus()
+        {
+            var result = DBHelper.RawSqlQuery<string>("SELECT DISTINCT status FROM public.earthquakes ORDER BY 1 ", x => (string)x[0]);
             return result;
         }
 
@@ -106,7 +113,10 @@ namespace earthquakeapi.Controllers
                     _EarthquakeContext.Attach(eqk);
                 }
                 _EarthquakeContext.SaveChanges();
+                DBHelper.UpdateGeometry(eqk.EarthquakeId);
+                _EarthquakeContext.Entry<Earthquake>(eqk).Reload();
             }
+            _hub.Clients.All.SendAsync("receive-feature", eqk!.ToFeature());
             return eqk!.ToFeature();
         }
 
@@ -127,6 +137,7 @@ namespace earthquakeapi.Controllers
                     _EarthquakeContext.Earthquakes?.Remove(eqk);
                     _EarthquakeContext.SaveChanges();
                 }
+                _hub.Clients.All.SendAsync("delete-feature", eqId);
             }
         }
     }

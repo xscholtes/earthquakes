@@ -1,52 +1,74 @@
-<form class="earthquake-form" fxLayout="column" [formGroup]="earthquakeForm">
-    <div class="input-row" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
-        <mat-form-field fxFlex>
-            <mat-label>Source</mat-label>
-            <input type="text" matInput formControlName="source" [(ngModel)]="source">
-        </mat-form-field>
-        <mat-form-field fxFlex>
-            <mat-label>Status</mat-label>
-            <input type="text" matInput formControlName="status" [(ngModel)]="status">
-        </mat-form-field>
-    </div>
-    <div class="input-row" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
-        <mat-form-field fxFlex>
-            <mat-label>Date</mat-label>
-            <input type="text" matInput [matDatepicker]="picker" formControlName="date" [(ngModel)]="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field fxFlex>
-            <mat-label>Time</mat-label>
-            <input type="time" matInput formControlName="time" [(ngModel)]="time">
-        </mat-form-field>
-    </div>
-    <div class="input-row" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
-        <mat-form-field fxFlex>
-            <mat-label>Latitude</mat-label>
-            <input type="text" matInput formControlName="latitude" [(ngModel)]="latitude">
-        </mat-form-field>
-        <mat-form-field fxFlex>
-            <mat-label>Longitude</mat-label>
-            <input type="text" matInput formControlName="longitude" [(ngModel)]="longitude">
-        </mat-form-field>
-    </div>
-    <div class="input-row" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
-        <mat-form-field fxFlex>
-            <mat-label>Depth</mat-label>
-            <input type="text" matInput formControlName="depth" [(ngModel)]="depth">
-        </mat-form-field>
-        <mat-form-field fxFlex>
-            <mat-label>Magnitude</mat-label>
-            <input type="text" matInput formControlName="magnitude" [(ngModel)]="magnitude">
-        </mat-form-field>
-        <mat-form-field fxFlex>
-            <mat-label>Magnitude type</mat-label>
-            <input type="text" matInput formControlName="magnitude_type" [(ngModel)]="magnitude_type">
-        </mat-form-field>
-    </div>
-    <div class="input-row" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
-        <button mat-raised-button color="primary" type="submit">Save</button> 
-        <button mat-raised-button (click)="cancel()">Cancel</button>
-    </div>
-</form>
+<div class="empty-item" *ngIf="editMode == false">
+    <span>Select an earthquake to edit from the map </span>&nbsp;
+    <button mat-raised-button color="primary" (click)="newFeature()">New earthquake</button>
+</div>
+<div *ngIf="editMode == true">
+    <form class="earthquake-form" fxLayout="column" [formGroup]="earthquakeForm" (ngSubmit)="onSubmit()">
+        <div class="input-row" fxLayout="row">
+            <mat-form-field fxFlex>
+                <mat-label>ID</mat-label>
+                <input matInput formControlName="id">
+            </mat-form-field>
+        </div>
+        <div class="input-row" fxLayout="row" fxLayoutGap="20px">
+            <mat-form-field fxFlex>
+                <mat-label>Source</mat-label>
+                <mat-select matInput formControlName="source">
+                    <mat-option *ngFor="let src of sources" [value]="src">
+                        {{src}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex>
+                <mat-label>Status</mat-label>
+                <mat-select matInput formControlName="status">
+                    <mat-option *ngFor="let st of status" [value]="st">
+                        {{st}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="input-row" fxLayout="row" fxLayoutGap="20px">
+            <mat-form-field fxFlex>
+                <mat-label>Date</mat-label>
+                <input type="text" matInput [matDatepicker]="picker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field fxFlex>
+                <mat-label>Time</mat-label>
+                <input type="time" matInput formControlName="time">
+            </mat-form-field>
+        </div>
+        <div class="input-row" fxLayout="row" fxLayoutGap="20px">
+            <mat-form-field fxFlex>
+                <mat-label>Latitude</mat-label>
+                <input type="text" matInput formControlName="latitude">
+            </mat-form-field>
+            <mat-form-field fxFlex>
+                <mat-label>Longitude</mat-label>
+                <input type="text" matInput formControlName="longitude">
+            </mat-form-field>
+        </div>
+        <div class="input-row" fxLayout="row" fxLayoutGap="20px">
+            <mat-form-field fxFlex>
+                <mat-label>Depth</mat-label>
+                <input type="text" matInput formControlName="depth">
+            </mat-form-field>
+            <mat-form-field fxFlex>
+                <mat-label>Magnitude</mat-label>
+                <input type="text" matInput formControlName="magnitude">
+            </mat-form-field>
+            <mat-form-field fxFlex>
+                <mat-label>Magnitude type</mat-label>
+                <input type="text" matInput formControlName="magnitude_type">
+            </mat-form-field>
+        </div>
+        <div mat-dialog-actions align="end">
+            <button mat-raised-button type="button" color="warn" (click)="delete()">Delete</button>
+            <button mat-raised-button type="button" color="primary" type="submit">Save</button>
+            <button mat-raised-button type="button" (click)="cancel()">Reset</button>
+            <button mat-raised-button type="button" (click)="editMode = false">Close</button>
+        </div>
+    </form>
+</div>
