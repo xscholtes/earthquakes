@@ -19,10 +19,23 @@
 - donetcore sdk 6
 - npm, angular cli
 
+## Patterns 
+	- Database First Model design (Entity Framework)
+	- Swagger Open API3 (swagger UI)
+	- swagger-code-gen to TypeScript with strict Model definition
+	- Angular with routing, service worker
+	- Angular material
+
 ## Performances
 
-### Protocol
-	- HTTP2
+### API
+	- dotnet core 6
+	- MemoryStore (not used)
+	- Feature as is CRUD
+	- SignalR notification broadcast update to clients
+	
+### NGINX
+	- HTTP2 (certificates and domain name required)
 	- GUNZIP
 	
 ### Client
@@ -31,6 +44,17 @@
 	- Lower resolution geographic country data during calculation
 	- SignalR (implementation pending)
 	- Push modifications in geographic data (use data transformation object pattern), transform on fly the feature model
-	- 
+	- Rendering improvement by not calculating invisible items
+	- Lazy rendering
 	
 ## Improvements 
+	- cache/invalidation on API
+	- cache/invalidation on Web Server
+	- cache headers for client
+	- database windowing
+	- client background calculation
+	- client asynchronous call
+	- api asynchronous call on all methods
+	
+	
+
