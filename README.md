@@ -56,5 +56,3 @@
 	- client asynchronous call
 	- api asynchronous call on all methods
 	
-	
-
