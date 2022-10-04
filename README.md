@@ -18,7 +18,7 @@
 - Postgis database
 - donetcore sdk 6
 - npm, angular cli
-- swagger-code-gen
+- swagger-code-gen (for developpment)
 
 ## Installation
 
