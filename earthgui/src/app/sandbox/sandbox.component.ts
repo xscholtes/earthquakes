@@ -268,12 +268,17 @@ export class SandboxComponent implements OnInit {
       this.cameraTilt = 25;
       this.slideGamma = 0;
       this.issInterval = setInterval(() => {
-        this.httpClient.get('http://api.open-notify.org/iss-now.json').subscribe((data: any) => {
-          this.slideLambda = data.iss_position.longitude;
-          this.slidePhi = data.iss_position.latitude;
+        this.httpClient.get('https://api.wheretheiss.at/v1/satellites/25544').subscribe((data: any) => {
+          this.slideLambda = data.longitude;
+          this.slidePhi = data.latitude;
           this.render();
         })
       }, 5000);
+      this.httpClient.get('https://api.wheretheiss.at/v1/satellites/25544').subscribe((data: any) => {
+          this.slideLambda = data.longitude;
+          this.slidePhi = data.latitude;
+          this.render();
+        });
     } else {
       clearInterval(this.issInterval);
       this.render();
