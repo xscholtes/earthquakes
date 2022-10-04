@@ -22,7 +22,7 @@
 
 ## Installation
 
-1. got clone ...
+1. git clone ...
 2. cd earthquakeapi
 3. psql < db/earthquake.sql
 4. change DB connection in Model.cs 
